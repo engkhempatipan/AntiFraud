@@ -79,10 +79,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun scanUnSecureApps() {
+        //show Ui
         showAccessibility()
         showDisplay()
         showAllAccessibilityEnabled()
-
+        //scan
         getDisplayManagerList()
         getUnTrustAccessibilityEnabledList()
         getAllAccessibilityEnabledList()
