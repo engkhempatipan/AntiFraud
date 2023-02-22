@@ -8,12 +8,6 @@
     android:padding="16dp"
     tools:context=".MainActivity">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_refresh"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Refresh" />
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -28,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
-                android:text="Display"
+                android:text="Display/Cast Screen/Remote Application"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -39,6 +33,7 @@
                 android:id="@+id/text_view_display"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="#40FF0000"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
-                android:text="Untrusted App (Accessibility enabled and sideload)"
+                android:text="แอพต้องสงสัย ที่เปิด Accessibility และไม่ได้โหลดจาก store"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -61,11 +56,35 @@
                 android:id="@+id/text_view_accessibility"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="#40FF0000"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n " />
+
+            <TextView
+                android:id="@+id/text_view_title_all_accessibility"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:text="แอพในเครื่องที่เปิด Accessibility"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/text_view_all_accessibility"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n Hello World!Hello World!Hello World!Hello \n " />
+
         </androidx.appcompat.widget.LinearLayoutCompat>
     </ScrollView>
 

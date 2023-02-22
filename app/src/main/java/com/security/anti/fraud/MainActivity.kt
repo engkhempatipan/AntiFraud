@@ -11,26 +11,28 @@ import androidx.appcompat.widget.AppCompatButton
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var btnRefresh: AppCompatButton
     private lateinit var textViewTitleAccessibility: TextView
     private lateinit var textViewAccessibility: TextView
     private lateinit var textViewTitleDisplay: TextView
     private lateinit var textViewDisplayManager: TextView
+    private lateinit var textViewTitleAllAccessibilityEnabled: TextView
+    private lateinit var textViewAllAccessibilityEnabled: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         //bindingView
-        btnRefresh = findViewById(R.id.btn_refresh)
         textViewTitleAccessibility = findViewById(R.id.text_view_title_accessibility)
         textViewAccessibility = findViewById(R.id.text_view_accessibility)
         textViewTitleDisplay = findViewById(R.id.text_view_title_display)
         textViewDisplayManager = findViewById(R.id.text_view_display)
-        //start
-        findFraud()
-        btnRefresh.setOnClickListener {
-            findFraud()
-        }
+        textViewTitleAllAccessibilityEnabled = findViewById(R.id.text_view_title_all_accessibility)
+        textViewAllAccessibilityEnabled = findViewById(R.id.text_view_all_accessibility)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        scanUnSecureApps()
     }
 
     private fun verifyScreenCasting(): String {
@@ -48,9 +50,9 @@ class MainActivity : AppCompatActivity() {
             }
             name = display.name
             return if (deviceProductInfo.isNotEmpty()) {
-                "DeviceProduct info: $deviceProductInfo , \nDisplayName: $name"
+                "DeviceProduct info = [$deviceProductInfo ], \nDisplayName = [$name]"
             } else {
-                "DisplayName: $name"
+                "DisplayName: = [$name]"
             }
         } else {
             return ""
@@ -61,21 +63,42 @@ class MainActivity : AppCompatActivity() {
     private fun verifyAccessibilityServiceChecker(): String {
         var insecureList = ""
         val accessibilityCheckerModel: AccessibilityCheckerModel =
-            verifyInstallerAccessibilityService()
+            this.verifyInstallerAccessibilityService()
         if (!accessibilityCheckerModel.isVerifyPass) {
-            accessibilityCheckerModel.listOfVerifyError.entries
+            Log.d(
+                "accessibility",
+                "accessibilityx:>" + accessibilityCheckerModel.listOfVerifyError.entries.toString()
+            )
 
             accessibilityCheckerModel.listOfVerifyError.entries.forEachIndexed { index, item ->
-                insecureList += item.value + "\n"
-                Log.d("accessibility", " values[$index]: " + item.value)
+                insecureList += "Package name = [" + item.key + "]\nApp name =[${item.value} ]\n\n"
+                Log.d("accessibility", " values[$index]: " + item.key)
             }
         }
         return insecureList
     }
 
-    private fun findFraud() {
+    private fun scanUnSecureApps() {
+        showAccessibility()
+        showDisplay()
+        showAllAccessibilityEnabled()
+
         getDisplayManagerList()
-        getAccessibilityEnabledList()
+        getUnTrustAccessibilityEnabledList()
+        getAllAccessibilityEnabledList()
+    }
+
+    private fun getAllAccessibilityEnabledList() {
+        val listEnabled = findAllEnabled()
+        if (listEnabled.entries.isEmpty()) {
+            hideAllAccessibilityEnabled()
+        }
+        var textAllAccessibilityEnalbed = ""
+        listEnabled.entries.forEachIndexed { index, item ->
+            textAllAccessibilityEnalbed += "Package name = [" + item.key + "]\nApp name =[${item.value} ]\n\n"
+        }
+        textViewAllAccessibilityEnabled.text = textAllAccessibilityEnalbed
+        Log.d("listEanbled", "listEnabled: = $listEnabled")
     }
 
     private fun getDisplayManagerList() {
@@ -87,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getAccessibilityEnabledList() {
+    private fun getUnTrustAccessibilityEnabledList() {
         val accessibilityDetectedList = verifyAccessibilityServiceChecker()
         if (accessibilityDetectedList.isEmpty()) {
             hideAccessibility()
@@ -102,9 +125,29 @@ class MainActivity : AppCompatActivity() {
         textViewDisplayManager.visibility = View.GONE
     }
 
+    private fun showDisplay() {
+        textViewTitleDisplay.visibility = View.VISIBLE
+        textViewDisplayManager.visibility = View.VISIBLE
+    }
+
     private fun hideAccessibility() {
         textViewTitleAccessibility.visibility = View.GONE
         textViewAccessibility.visibility = View.GONE
+    }
+
+    private fun showAccessibility() {
+        textViewTitleAccessibility.visibility = View.VISIBLE
+        textViewAccessibility.visibility = View.VISIBLE
+    }
+
+    private fun hideAllAccessibilityEnabled() {
+        textViewTitleAllAccessibilityEnabled.visibility = View.GONE
+        textViewAllAccessibilityEnabled.visibility = View.GONE
+    }
+
+    private fun showAllAccessibilityEnabled() {
+        textViewTitleAllAccessibilityEnabled.visibility = View.VISIBLE
+        textViewAllAccessibilityEnabled.visibility = View.VISIBLE
     }
 
 }
