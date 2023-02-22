@@ -1,11 +1,13 @@
 package com.security.anti.fraud
 
+import android.hardware.display.DisplayManager
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,25 +33,62 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun verifyScreenCasting(): String {
+        var deviceProductInfo = ""
+        var name = ""
+        val displayManager = getSystemService(DISPLAY_SERVICE) as DisplayManager
+        val presentationDisplays =
+            displayManager.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION)
+        if (presentationDisplays.isNotEmpty()) {
+            val display = presentationDisplays[0]
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                display.deviceProductInfo?.let {
+                    deviceProductInfo = it.name.toString()
+                }
+            }
+            name = display.name
+            return if (deviceProductInfo.isNotEmpty()) {
+                "DeviceProduct info: $deviceProductInfo , \nDisplayName: $name"
+            } else {
+                "DisplayName: $name"
+            }
+        } else {
+            return ""
+        }
+
+    }
+
+    private fun verifyAccessibilityServiceChecker(): String {
+        var insecureList = ""
+        val accessibilityCheckerModel: AccessibilityCheckerModel =
+            verifyInstallerAccessibilityService()
+        if (!accessibilityCheckerModel.isVerifyPass) {
+            accessibilityCheckerModel.listOfVerifyError.entries
+
+            accessibilityCheckerModel.listOfVerifyError.entries.forEachIndexed { index, item ->
+                insecureList += item.value + "\n"
+                Log.d("accessibility", " values[$index]: " + item.value)
+            }
+        }
+        return insecureList
+    }
+
     private fun findFraud() {
         getDisplayManagerList()
         getAccessibilityEnabledList()
     }
 
     private fun getDisplayManagerList() {
-        val displayDetectedList = ""
-        //TODO FIND LIST
+        val displayDetectedList = verifyScreenCasting()
         if (displayDetectedList.isEmpty()) {
             hideDisplay()
         } else {
             textViewDisplayManager.text = displayDetectedList
         }
-
     }
 
     private fun getAccessibilityEnabledList() {
-        val accessibilityDetectedList = ""
-        //TODO FIND LIST
+        val accessibilityDetectedList = verifyAccessibilityServiceChecker()
         if (accessibilityDetectedList.isEmpty()) {
             hideAccessibility()
         } else {
