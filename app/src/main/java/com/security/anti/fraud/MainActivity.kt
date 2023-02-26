@@ -5,7 +5,6 @@ import android.hardware.display.DisplayManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -60,24 +59,6 @@ class MainActivity : AppCompatActivity() {
             return ""
         }
 
-    }
-
-    private fun verifyAccessibilityServiceChecker(): String {
-        var insecureList = ""
-        val accessibilityCheckerModel: AccessibilityCheckerModel =
-            this.verifyInstallerAccessibilityService()
-        if (!accessibilityCheckerModel.isVerifyPass) {
-            Log.d(
-                "accessibility",
-                "accessibilityx:>" + accessibilityCheckerModel.listOfVerifyError.entries.toString()
-            )
-
-            accessibilityCheckerModel.listOfVerifyError.entries.forEachIndexed { index, item ->
-                insecureList += "Package name = [" + item.key + "]\nApp name =[${item.value} ]\n\n"
-                Log.d("accessibility", " values[$index]: " + item.key)
-            }
-        }
-        return insecureList
     }
 
     private fun scanUnSecureApps() {
