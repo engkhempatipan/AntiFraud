@@ -1,22 +1,20 @@
 package com.security.anti.fraud
 
 import android.content.Intent
-import android.hardware.display.DisplayManager
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.security.anti.fraud.databinding.ActivityMainBinding
-import com.security.anti.fraud.model.Model
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-
+    private lateinit var checker: SecurityChecker
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        checker = SecurityChecker()
     }
 
     override fun onResume() {
@@ -24,87 +22,50 @@ class MainActivity : AppCompatActivity() {
         scanUnSecureApps()
     }
 
-    private fun verifyScreenCasting(): String {
-        var deviceProductInfo = ""
-        var name = ""
-        val displayManager = getSystemService(DISPLAY_SERVICE) as DisplayManager
-        val presentationDisplays =
-            displayManager.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION)
-        if (presentationDisplays.isNotEmpty()) {
-            val display = presentationDisplays[0]
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                display.deviceProductInfo?.let {
-                    deviceProductInfo = it.name.toString()
-                }
-            }
-            name = display.name
-            return if (deviceProductInfo.isNotEmpty()) {
-                "DeviceProduct info = [$deviceProductInfo ], \nDisplayName = [$name]"
-            } else {
-                "DisplayName: = [$name]"
-            }
-        } else {
-            return ""
-        }
-
-    }
-
     private fun scanUnSecureApps() {
         //show Ui
-        showAccessibilitySection()
         showDisplaySection()
-        showAllAccessibilityEnabledSection()
+        showUntrustedAccessibilitySection()
+        showAccessibilityEnabledListSection()
         //scan
-        getDisplayManagerList()
-        getUntrustedSourceList()
-        getAllAccessibilityEnabledList()
+        getPresentationDisplay()
+        getUntrustedList()
+        getAccessibilityEnabledList()
     }
 
-    private fun getAllAccessibilityEnabledList() {
-        val listEnabled = findAllAccessibilityEnabledInfo()
-        if (listEnabled.isEmpty()) {
+    private fun getAccessibilityEnabledList() {
+        val listEnabled = checker.getAccessibilityEnabledList(this)
+        if (listEnabled == null) {
             hideAllAccessibilityEnabled()
+        } else {
+            binding.textViewAllAccessibility.text = listEnabled
         }
-        var textAllAccessibilityEnabled = ""
-        listEnabled.forEachIndexed { _, item ->
-            textAllAccessibilityEnabled += "Package name = [" + item.packageName + "]\n" +
-                    "App name =[${item.appName} ]\n" +
-                    "Installer id =[${item.installerID}]\n\n"
-        }
-        binding.textViewAllAccessibility.text = textAllAccessibilityEnabled
     }
 
-    private fun getUntrustedSourceList() {
-        val untrustedList = findAllAccessibilityEnabledInfo().filter { !it.isTrustedApp }
-        if (untrustedList.isEmpty()) {
-            hideAccessibility()
+    private fun getUntrustedList() {
+        val untrustedList = checker.getUntrustedApp(this)
+        if (untrustedList == null) {
+            hideUntrustedAccessibility()
+        } else {
+            binding.textViewAccessibility.text = untrustedList
         }
 
-        var untrustedListString = ""
-        if (untrustedList.isNotEmpty()) {
-            untrustedList.forEachIndexed { _: Int, item: Model ->
-                untrustedListString += "Package name = [" + item.packageName + "]\n" +
-                        "App name =[${item.appName} ]\n" +
-                        "Installer id =[${item.installerID}]\n\n"
-            }
-        }
-
-        binding.textViewAccessibility.text = untrustedListString
     }
 
-
-    private fun getDisplayManagerList() {
-        val displayDetectedList = verifyScreenCasting()
-        if (displayDetectedList.isEmpty()) {
+    private fun getPresentationDisplay() {
+        val displayDetectedList = checker.checkDisplayPresentation(this)
+        if (displayDetectedList == null) {
             hideDisplay()
         } else {
-            binding.textViewDisplay.text = displayDetectedList
+            binding.textViewDisplay.text = displayDetectedList.customWording
         }
     }
+
     private fun hideDisplay() {
         binding.textViewTitleDisplay.visibility = View.GONE
         binding.textViewDisplay.visibility = View.GONE
     }
+
     private fun showDisplaySection() {
         binding.textViewTitleDisplay.visibility = View.VISIBLE
         binding.textViewDisplay.visibility = View.VISIBLE
@@ -113,12 +74,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun hideAccessibility() {
+    private fun hideUntrustedAccessibility() {
         binding.textViewTitleAccessibility.visibility = View.GONE
         binding.textViewAccessibility.visibility = View.GONE
     }
 
-    private fun showAccessibilitySection() {
+    private fun showUntrustedAccessibilitySection() {
         binding.textViewTitleAccessibility.visibility = View.VISIBLE
         binding.textViewAccessibility.visibility = View.VISIBLE
         binding.textViewAccessibility.setOnClickListener {
@@ -131,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         binding.textViewAllAccessibility.visibility = View.GONE
     }
 
-    private fun showAllAccessibilityEnabledSection() {
+    private fun showAccessibilityEnabledListSection() {
         binding.textViewTitleAllAccessibility.visibility = View.VISIBLE
         binding.textViewAllAccessibility.visibility = View.VISIBLE
     }
