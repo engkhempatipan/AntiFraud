@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.security.anti.fraud.model.Model
 
 class MainActivity : AppCompatActivity() {
 
@@ -86,22 +87,42 @@ class MainActivity : AppCompatActivity() {
         showAllAccessibilityEnabled()
         //scan
         getDisplayManagerList()
-        getUnTrustAccessibilityEnabledList()
-        getAllAccessibilityEnabledList()
+        getListOfUntrustedSource()
+        getAllAccessibilityEnabledListModel()
     }
-
-    private fun getAllAccessibilityEnabledList() {
-        val listEnabled = findAllEnabled()
-        if (listEnabled.entries.isEmpty()) {
+    private fun getAllAccessibilityEnabledListModel() {
+        val listEnabled = findAllAccessibilityEnabledInfo()
+        if (listEnabled.isEmpty()) {
             hideAllAccessibilityEnabled()
         }
-        var textAllAccessibilityEnalbed = ""
-        listEnabled.entries.forEachIndexed { index, item ->
-            textAllAccessibilityEnalbed += "Package name = [" + item.key + "]\nApp name =[${item.value} ]\n\n"
+        var textAllAccessibilityEnabled = ""
+        listEnabled.forEachIndexed { _, item ->
+            textAllAccessibilityEnabled += "Package name = [" + item.packageName + "]\n" +
+                    "App name =[${item.appName} ]\n" +
+                    "Installer id =[${item.installerID}]\n\n"
         }
-        textViewAllAccessibilityEnabled.text = textAllAccessibilityEnalbed
-        Log.d("listEanbled", "listEnabled: = $listEnabled")
+        textViewAllAccessibilityEnabled.text = textAllAccessibilityEnabled
     }
+
+    private fun getListOfUntrustedSource() {
+        val listEnabled = findAllAccessibilityEnabledInfo()
+        if (listEnabled.isEmpty()) {
+            hideAccessibility()
+        }
+
+        val untrustedList = listEnabled.filter { !it.isTrustedApp }
+        var untrustedListString = ""
+        if(untrustedList.isNotEmpty()){
+            untrustedList.forEachIndexed { _: Int, item: Model ->
+                untrustedListString += "Package name = [" + item.packageName + "]\n" +
+                        "App name =[${item.appName} ]\n" +
+                        "Installer id =[${item.installerID}]\n\n"
+            }
+        }
+
+        textViewAccessibility.text = untrustedListString
+    }
+
 
     private fun getDisplayManagerList() {
         val displayDetectedList = verifyScreenCasting()
@@ -110,16 +131,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             textViewDisplayManager.text = displayDetectedList
         }
-    }
-
-    private fun getUnTrustAccessibilityEnabledList() {
-        val accessibilityDetectedList = verifyAccessibilityServiceChecker()
-        if (accessibilityDetectedList.isEmpty()) {
-            hideAccessibility()
-        } else {
-            textViewAccessibility.text = accessibilityDetectedList
-        }
-
     }
 
     private fun hideDisplay() {

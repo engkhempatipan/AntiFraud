@@ -64,14 +64,18 @@ fun Context.findAllAccessibilityEnabledInfo(): List<Model> {
         AccessibilityServiceInfo.FEEDBACK_ALL_MASK
     )
     enabledServices.mapNotNull { service ->
+        val serviceInfo = service.resolveInfo.serviceInfo
         val packageName = service.resolveInfo.serviceInfo.packageName
         val appLabel = getApplicationLabelName(packageName)
         val installerId = getInstallerId(packageName)
+        val isTrustedApp = verifyInstallerId(serviceInfo)
         listModel.add(
             Model(
-                packageId = packageName,
+                packageName = packageName,
                 appName = appLabel,
-                installerID = installerId
+                installerID = installerId,
+                serviceInfo = serviceInfo,
+                isTrustedApp = isTrustedApp
             )
         )
     }
@@ -81,7 +85,6 @@ fun Context.findAllAccessibilityEnabledInfo(): List<Model> {
 fun Context.verifyEnableServicesInstaller(
     enabledServices: List<AccessibilityServiceInfo>
 ): Map<String, String> {
-    enabledServices
     return enabledServices
         .mapNotNull { service ->
             val serviceInfo = service.resolveInfo.serviceInfo
