@@ -6,6 +6,9 @@ import com.security.anti.fraud.checker.callback.AccessibilityUntrustedEnabledLis
 import com.security.anti.fraud.checker.callback.DisplayCheckerCallback
 
 interface SecurityCheckerInterface {
+    /**
+     * Detect -> Screen casting, Remote application [TeamViewer,AnyDesk]
+     */
     fun checkDisplayPresentation(
         activity: Activity,
         callback: DisplayCheckerCallback

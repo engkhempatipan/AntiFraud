@@ -11,9 +11,6 @@ import com.security.anti.fraud.model.DisplayManagerModel
 import com.security.anti.fraud.model.Model
 
 class SecurityChecker : SecurityCheckerInterface {
-    /**
-     * Detect -> Screen casting, Remote application [TeamViewer,AnyDesk]
-     */
     override fun checkDisplayPresentation(
         activity: Activity,
         callback: DisplayCheckerCallback
