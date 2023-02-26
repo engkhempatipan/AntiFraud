@@ -4,18 +4,17 @@ import android.app.Activity
 import android.hardware.display.DisplayManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
+import com.security.anti.fraud.checker.callback.AccessibilityEnabledListCallback
+import com.security.anti.fraud.checker.callback.AccessibilityUntrustedEnabledListCallback
+import com.security.anti.fraud.checker.callback.DisplayCheckerCallback
 import com.security.anti.fraud.model.DisplayManagerModel
 import com.security.anti.fraud.model.Model
 
-class SecurityChecker {
+class SecurityChecker : SecurityCheckerInterface {
     /**
      * Detect -> Screen casting, Remote application [TeamViewer,AnyDesk]
      */
-    interface DisplayCheckerCallback {
-        fun onDetected(displayManagerModel: DisplayManagerModel)
-    }
-
-    fun checkDisplayPresentation(
+    override fun checkDisplayPresentation(
         activity: Activity,
         callback: DisplayCheckerCallback
     ) {
@@ -51,12 +50,7 @@ class SecurityChecker {
             }
         }
     }
-
-    interface AccessibilityEnabledListCallback {
-        fun onDetected(models: List<Model>?, customString: String)
-    }
-
-    fun getAccessibilityEnabledList(
+    override fun getAccessibilityEnabledList(
         activity: Activity,
         callback: AccessibilityEnabledListCallback
     ) {
@@ -71,12 +65,10 @@ class SecurityChecker {
         }
         callback.onDetected(listEnabled, accessibilityEnabledString)
     }
-
-    interface AccessibilityUntrustedEnabledListCallback {
-        fun onDetected(models: List<Model>?, customString: String)
-    }
-
-    fun getUntrustedApp(activity: Activity, callback: AccessibilityUntrustedEnabledListCallback) {
+    override fun getUntrustedApp(
+        activity: Activity,
+        callback: AccessibilityUntrustedEnabledListCallback
+    ) {
         val untrustedList: List<Model> =
             activity.findAllAccessibilityEnabledInfo().filter { !it.isTrustedApp }
         if (untrustedList.isEmpty())

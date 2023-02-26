@@ -6,13 +6,17 @@ import android.provider.Settings
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.security.anti.fraud.checker.SecurityChecker
+import com.security.anti.fraud.checker.SecurityCheckerInterface
+import com.security.anti.fraud.checker.callback.AccessibilityEnabledListCallback
+import com.security.anti.fraud.checker.callback.AccessibilityUntrustedEnabledListCallback
+import com.security.anti.fraud.checker.callback.DisplayCheckerCallback
 import com.security.anti.fraud.databinding.ActivityMainBinding
 import com.security.anti.fraud.model.DisplayManagerModel
 import com.security.anti.fraud.model.Model
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var checker: SecurityChecker
+    private lateinit var checker: SecurityCheckerInterface
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -31,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         hideUntrustedAccessibility()
         hideAllAccessibilityEnabled()
         //scan
-        checker.checkDisplayPresentation(this, object : SecurityChecker.DisplayCheckerCallback {
+        checker.checkDisplayPresentation(this, object : DisplayCheckerCallback {
             override fun onDetected(displayManagerModel: DisplayManagerModel) {
                 showDisplaySection()
                 binding.textViewDisplay.text = displayManagerModel.customWording
@@ -40,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 
         checker.getUntrustedApp(
             this,
-            object : SecurityChecker.AccessibilityUntrustedEnabledListCallback {
+            object : AccessibilityUntrustedEnabledListCallback {
                 override fun onDetected(models: List<Model>?, customString: String) {
                     showUntrustedAccessibilitySection()
                     binding.textViewAccessibility.text = customString
@@ -49,7 +53,7 @@ class MainActivity : AppCompatActivity() {
 
         checker.getAccessibilityEnabledList(
             this,
-            object : SecurityChecker.AccessibilityEnabledListCallback {
+            object : AccessibilityEnabledListCallback {
                 override fun onDetected(models: List<Model>?, customString: String) {
                     showAccessibilityEnabledListSection()
                     binding.textViewAllAccessibility.text = customString
