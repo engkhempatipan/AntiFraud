@@ -1,4 +1,4 @@
-package com.security.anti.fraud
+package com.security.anti.fraud.checker
 
 import android.app.Activity
 import android.hardware.display.DisplayManager
@@ -11,7 +11,14 @@ class SecurityChecker {
     /**
      * Detect -> Screen casting, Remote application [TeamViewer,AnyDesk]
      */
-    fun checkDisplayPresentation(activity: Activity): DisplayManagerModel? {
+    interface DisplayCheckerCallback {
+        fun onDetected(displayManagerModel: DisplayManagerModel)
+    }
+
+    fun checkDisplayPresentation(
+        activity: Activity,
+        callback: DisplayCheckerCallback
+    ) {
         var deviceProductInfo = ""
         var displayName = ""
         val displayManager =
@@ -26,44 +33,54 @@ class SecurityChecker {
                 }
             }
             displayName = display.name
-            return if (deviceProductInfo.isNotEmpty()) {
-                DisplayManagerModel(
+            if (deviceProductInfo.isNotEmpty()) {
+                val model = DisplayManagerModel(
                     displayName = displayName,
                     deviceProductInfo = deviceProductInfo,
                     customWording = "DeviceProduct info = [$deviceProductInfo ], \nDisplayName = [$displayName]"
                 )
+                callback.onDetected(model)
+
             } else {
-                "DisplayName: = [$displayName]"
-                DisplayManagerModel(
+                val model = DisplayManagerModel(
                     displayName = displayName,
                     deviceProductInfo = null,
                     customWording = "DisplayName: = [$displayName]"
                 )
+                callback.onDetected(model)
             }
-        } else {
-            return null
         }
     }
 
-    fun getAccessibilityEnabledList(activity: Activity): String? {
+    interface AccessibilityEnabledListCallback {
+        fun onDetected(models: List<Model>?, customString: String)
+    }
+
+    fun getAccessibilityEnabledList(
+        activity: Activity,
+        callback: AccessibilityEnabledListCallback
+    ) {
         val listEnabled: List<Model> = activity.findAllAccessibilityEnabledInfo()
         if (listEnabled.isEmpty())
-            return null
-
+            return
         var accessibilityEnabledString = ""
         listEnabled.forEachIndexed { _, item ->
             accessibilityEnabledString += "Package name = [" + item.packageName + "]\n" +
                     "App name =[${item.appName} ]\n" +
                     "Installer id =[${item.installerID}]\n\n"
         }
-        return accessibilityEnabledString
+        callback.onDetected(listEnabled, accessibilityEnabledString)
     }
 
-    fun getUntrustedApp(activity: Activity): String? {
+    interface AccessibilityUntrustedEnabledListCallback {
+        fun onDetected(models: List<Model>?, customString: String)
+    }
+
+    fun getUntrustedApp(activity: Activity, callback: AccessibilityUntrustedEnabledListCallback) {
         val untrustedList: List<Model> =
             activity.findAllAccessibilityEnabledInfo().filter { !it.isTrustedApp }
         if (untrustedList.isEmpty())
-            return null
+            return
 
         var untrustedListString = ""
         untrustedList.forEachIndexed { _: Int, item: Model ->
@@ -71,6 +88,6 @@ class SecurityChecker {
                     "App name =[${item.appName} ]\n" +
                     "Installer id =[${item.installerID}]\n\n"
         }
-        return untrustedListString
+        callback.onDetected(untrustedList, untrustedListString)
     }
 }

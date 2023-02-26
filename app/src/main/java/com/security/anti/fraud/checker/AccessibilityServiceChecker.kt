@@ -1,6 +1,6 @@
 @file:JvmName("AccessibilityServiceChecker")
 
-package com.security.anti.fraud
+package com.security.anti.fraud.checker
 
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context

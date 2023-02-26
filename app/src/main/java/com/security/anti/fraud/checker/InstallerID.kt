@@ -1,4 +1,4 @@
-package com.security.anti.fraud
+package com.security.anti.fraud.checker
 
 import java.util.ArrayList
 

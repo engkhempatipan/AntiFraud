@@ -1,4 +1,4 @@
-package com.security.anti.fraud
+package com.security.anti.fraud.checker
 
 enum class WhitelistPackageId(private val packageIds: List<String>) {
     SAMSUNG_ACCESSIBILITY(

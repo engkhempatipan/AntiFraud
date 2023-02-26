@@ -5,7 +5,10 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.security.anti.fraud.checker.SecurityChecker
 import com.security.anti.fraud.databinding.ActivityMainBinding
+import com.security.anti.fraud.model.DisplayManagerModel
+import com.security.anti.fraud.model.Model
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -23,43 +26,37 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun scanUnSecureApps() {
-        //show Ui
-        showDisplaySection()
-        showUntrustedAccessibilitySection()
-        showAccessibilityEnabledListSection()
+        //hide Ui
+        hideDisplay()
+        hideUntrustedAccessibility()
+        hideAllAccessibilityEnabled()
         //scan
-        getPresentationDisplay()
-        getUntrustedList()
-        getAccessibilityEnabledList()
+        checker.checkDisplayPresentation(this, object : SecurityChecker.DisplayCheckerCallback {
+            override fun onDetected(displayManagerModel: DisplayManagerModel) {
+                showDisplaySection()
+                binding.textViewDisplay.text = displayManagerModel.customWording
+            }
+        })
+
+        checker.getUntrustedApp(
+            this,
+            object : SecurityChecker.AccessibilityUntrustedEnabledListCallback {
+                override fun onDetected(models: List<Model>?, customString: String) {
+                    showUntrustedAccessibilitySection()
+                    binding.textViewAccessibility.text = customString
+                }
+            })
+
+        checker.getAccessibilityEnabledList(
+            this,
+            object : SecurityChecker.AccessibilityEnabledListCallback {
+                override fun onDetected(models: List<Model>?, customString: String) {
+                    showAccessibilityEnabledListSection()
+                    binding.textViewAllAccessibility.text = customString
+                }
+            })
     }
 
-    private fun getAccessibilityEnabledList() {
-        val listEnabled = checker.getAccessibilityEnabledList(this)
-        if (listEnabled == null) {
-            hideAllAccessibilityEnabled()
-        } else {
-            binding.textViewAllAccessibility.text = listEnabled
-        }
-    }
-
-    private fun getUntrustedList() {
-        val untrustedList = checker.getUntrustedApp(this)
-        if (untrustedList == null) {
-            hideUntrustedAccessibility()
-        } else {
-            binding.textViewAccessibility.text = untrustedList
-        }
-
-    }
-
-    private fun getPresentationDisplay() {
-        val displayDetectedList = checker.checkDisplayPresentation(this)
-        if (displayDetectedList == null) {
-            hideDisplay()
-        } else {
-            binding.textViewDisplay.text = displayDetectedList.customWording
-        }
-    }
 
     private fun hideDisplay() {
         binding.textViewTitleDisplay.visibility = View.GONE
