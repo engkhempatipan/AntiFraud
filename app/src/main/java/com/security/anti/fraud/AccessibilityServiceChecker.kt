@@ -10,6 +10,7 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import android.view.accessibility.AccessibilityManager
 import android.util.Log
+import com.security.anti.fraud.model.Model
 
 private val installerID = InstallerID.values()
     .filter { it != InstallerID.AMAZON_APP_STORE }
@@ -53,6 +54,28 @@ fun Context.findAllEnabled(): Map<String, String> {
             Pair(packageName, appLabel)
         }
         .toMap()
+}
+
+fun Context.findAllAccessibilityEnabledInfo(): List<Model> {
+    val listModel = mutableListOf<Model>()
+    val accessibilityManager =
+        getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+    val enabledServices = accessibilityManager.getEnabledAccessibilityServiceList(
+        AccessibilityServiceInfo.FEEDBACK_ALL_MASK
+    )
+    enabledServices.mapNotNull { service ->
+        val packageName = service.resolveInfo.serviceInfo.packageName
+        val appLabel = getApplicationLabelName(packageName)
+        val installerId = getInstallerId(packageName)
+        listModel.add(
+            Model(
+                packageId = packageName,
+                appName = appLabel,
+                installerID = installerId
+            )
+        )
+    }
+    return listModel
 }
 
 fun Context.verifyEnableServicesInstaller(

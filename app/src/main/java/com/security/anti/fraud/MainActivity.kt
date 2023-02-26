@@ -1,13 +1,14 @@
 package com.security.anti.fraud
 
+import android.content.Intent
 import android.hardware.display.DisplayManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatButton
 
 class MainActivity : AppCompatActivity() {
 
@@ -129,6 +130,9 @@ class MainActivity : AppCompatActivity() {
     private fun showDisplay() {
         textViewTitleDisplay.visibility = View.VISIBLE
         textViewDisplayManager.visibility = View.VISIBLE
+        textViewDisplayManager.setOnClickListener {
+            startActivity(Intent(Settings.ACTION_CAST_SETTINGS))
+        }
     }
 
     private fun hideAccessibility() {
@@ -139,6 +143,9 @@ class MainActivity : AppCompatActivity() {
     private fun showAccessibility() {
         textViewTitleAccessibility.visibility = View.VISIBLE
         textViewAccessibility.visibility = View.VISIBLE
+        textViewAccessibility.setOnClickListener {
+            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+        }
     }
 
     private fun hideAllAccessibilityEnabled() {
