@@ -47,6 +47,7 @@ class SecurityChecker : SecurityCheckerInterface {
             }
         }
     }
+
     override fun getAccessibilityEnabledList(
         activity: Activity,
         callback: AccessibilityEnabledListCallback
@@ -55,13 +56,14 @@ class SecurityChecker : SecurityCheckerInterface {
         if (listEnabled.isEmpty())
             return
         var accessibilityEnabledString = ""
-        listEnabled.forEachIndexed { _, item ->
+        listEnabled.forEach { item ->
             accessibilityEnabledString += "Package name = [" + item.packageName + "]\n" +
                     "App name =[${item.appName} ]\n" +
                     "Installer id =[${item.installerID}]\n\n"
         }
         callback.onDetected(listEnabled, accessibilityEnabledString)
     }
+
     override fun getUntrustedApp(
         activity: Activity,
         callback: AccessibilityUntrustedEnabledListCallback
@@ -72,7 +74,7 @@ class SecurityChecker : SecurityCheckerInterface {
             return
 
         var untrustedListString = ""
-        untrustedList.forEachIndexed { _: Int, item: Model ->
+        untrustedList.forEach { item: Model ->
             untrustedListString += "Package name = [" + item.packageName + "]\n" +
                     "App name =[${item.appName} ]\n" +
                     "Installer id =[${item.installerID}]\n\n"
