@@ -18,44 +18,6 @@ private val installerID = InstallerID.values()
 
 private val packageWhitelistId = WhitelistPackageId.values().toList()
 
-fun Context.verifyInstallerAccessibilityService(): AccessibilityCheckerModel {
-    val accessibilityManager =
-        getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-    val enabledServices = accessibilityManager.getEnabledAccessibilityServiceList(
-        AccessibilityServiceInfo.FEEDBACK_ALL_MASK
-    )
-    val listOfVerifyError = verifyEnableServicesInstaller(enabledServices)
-    return AccessibilityCheckerModel(
-        listOfVerifyError.isEmpty(),
-        listOfVerifyError
-    ).also {
-        Log.e(
-            "",
-            """
-            AccessibilityModelChecker
-            IsVerifyPass: ${it.isVerifyPass}
-            ListOfError: ${it.listOfVerifyError.entries}
-            """.trimIndent()
-        )
-    }
-}
-
-fun Context.findAllEnabled(): Map<String, String> {
-    val accessibilityManager =
-        getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-    val enabledServices = accessibilityManager.getEnabledAccessibilityServiceList(
-        AccessibilityServiceInfo.FEEDBACK_ALL_MASK
-    )
-    return enabledServices
-        .mapNotNull { service ->
-            val packageName = service.resolveInfo.serviceInfo.packageName
-            val appLabel = getApplicationLabelName(packageName)
-            Log.e("", "Accessibility enable Name =$appLabel: Package =$packageName")
-            Pair(packageName, appLabel)
-        }
-        .toMap()
-}
-
 fun Context.findAllAccessibilityEnabledInfo(): List<Model> {
     val listModel = mutableListOf<Model>()
     val accessibilityManager =
@@ -80,25 +42,6 @@ fun Context.findAllAccessibilityEnabledInfo(): List<Model> {
         )
     }
     return listModel
-}
-
-fun Context.verifyEnableServicesInstaller(
-    enabledServices: List<AccessibilityServiceInfo>
-): Map<String, String> {
-    return enabledServices
-        .mapNotNull { service ->
-            val serviceInfo = service.resolveInfo.serviceInfo
-            val packageName = service.resolveInfo.serviceInfo.packageName
-            val appLabel = getApplicationLabelName(packageName)
-            Log.e("", "Accessibility enable Name =$appLabel: Package =$packageName")
-
-            if (!verifyInstallerId(serviceInfo)) {
-                Pair(packageName, appLabel)
-            } else {
-                null
-            }
-        }
-        .toMap()
 }
 
 // Ref : https://github.com/javiersantos/PiracyChecker
@@ -127,7 +70,7 @@ fun Context.isValidInstaller(
 
 private fun isSystemApp(appInfo: ApplicationInfo): Boolean {
     val isSystemApp = appInfo.flags and ApplicationInfo.FLAG_SYSTEM == ApplicationInfo.FLAG_SYSTEM
-    Log.e("", "Accessibility isSystemApp : $isSystemApp")
+    Log.e("isSystemApp", "Accessibility isSystemApp : $isSystemApp")
     return isSystemApp
 }
 

@@ -6,29 +6,17 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.security.anti.fraud.databinding.ActivityMainBinding
 import com.security.anti.fraud.model.Model
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var textViewTitleAccessibility: TextView
-    private lateinit var textViewAccessibility: TextView
-    private lateinit var textViewTitleDisplay: TextView
-    private lateinit var textViewDisplayManager: TextView
-    private lateinit var textViewTitleAllAccessibilityEnabled: TextView
-    private lateinit var textViewAllAccessibilityEnabled: TextView
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        //bindingView
-        textViewTitleAccessibility = findViewById(R.id.text_view_title_accessibility)
-        textViewAccessibility = findViewById(R.id.text_view_accessibility)
-        textViewTitleDisplay = findViewById(R.id.text_view_title_display)
-        textViewDisplayManager = findViewById(R.id.text_view_display)
-        textViewTitleAllAccessibilityEnabled = findViewById(R.id.text_view_title_all_accessibility)
-        textViewAllAccessibilityEnabled = findViewById(R.id.text_view_all_accessibility)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
     }
 
     override fun onResume() {
@@ -63,15 +51,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun scanUnSecureApps() {
         //show Ui
-        showAccessibility()
-        showDisplay()
-        showAllAccessibilityEnabled()
+        showAccessibilitySection()
+        showDisplaySection()
+        showAllAccessibilityEnabledSection()
         //scan
         getDisplayManagerList()
-        getListOfUntrustedSource()
-        getAllAccessibilityEnabledListModel()
+        getUntrustedSourceList()
+        getAllAccessibilityEnabledList()
     }
-    private fun getAllAccessibilityEnabledListModel() {
+
+    private fun getAllAccessibilityEnabledList() {
         val listEnabled = findAllAccessibilityEnabledInfo()
         if (listEnabled.isEmpty()) {
             hideAllAccessibilityEnabled()
@@ -82,18 +71,17 @@ class MainActivity : AppCompatActivity() {
                     "App name =[${item.appName} ]\n" +
                     "Installer id =[${item.installerID}]\n\n"
         }
-        textViewAllAccessibilityEnabled.text = textAllAccessibilityEnabled
+        binding.textViewAllAccessibility.text = textAllAccessibilityEnabled
     }
 
-    private fun getListOfUntrustedSource() {
-        val listEnabled = findAllAccessibilityEnabledInfo()
-        if (listEnabled.isEmpty()) {
+    private fun getUntrustedSourceList() {
+        val untrustedList = findAllAccessibilityEnabledInfo().filter { !it.isTrustedApp }
+        if (untrustedList.isEmpty()) {
             hideAccessibility()
         }
 
-        val untrustedList = listEnabled.filter { !it.isTrustedApp }
         var untrustedListString = ""
-        if(untrustedList.isNotEmpty()){
+        if (untrustedList.isNotEmpty()) {
             untrustedList.forEachIndexed { _: Int, item: Model ->
                 untrustedListString += "Package name = [" + item.packageName + "]\n" +
                         "App name =[${item.appName} ]\n" +
@@ -101,7 +89,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        textViewAccessibility.text = untrustedListString
+        binding.textViewAccessibility.text = untrustedListString
     }
 
 
@@ -110,44 +98,42 @@ class MainActivity : AppCompatActivity() {
         if (displayDetectedList.isEmpty()) {
             hideDisplay()
         } else {
-            textViewDisplayManager.text = displayDetectedList
+            binding.textViewDisplay.text = displayDetectedList
         }
     }
-
     private fun hideDisplay() {
-        textViewTitleDisplay.visibility = View.GONE
-        textViewDisplayManager.visibility = View.GONE
+        binding.textViewTitleDisplay.visibility = View.GONE
+        binding.textViewDisplay.visibility = View.GONE
     }
-
-    private fun showDisplay() {
-        textViewTitleDisplay.visibility = View.VISIBLE
-        textViewDisplayManager.visibility = View.VISIBLE
-        textViewDisplayManager.setOnClickListener {
+    private fun showDisplaySection() {
+        binding.textViewTitleDisplay.visibility = View.VISIBLE
+        binding.textViewDisplay.visibility = View.VISIBLE
+        binding.textViewDisplay.setOnClickListener {
             startActivity(Intent(Settings.ACTION_CAST_SETTINGS))
         }
     }
 
     private fun hideAccessibility() {
-        textViewTitleAccessibility.visibility = View.GONE
-        textViewAccessibility.visibility = View.GONE
+        binding.textViewTitleAccessibility.visibility = View.GONE
+        binding.textViewAccessibility.visibility = View.GONE
     }
 
-    private fun showAccessibility() {
-        textViewTitleAccessibility.visibility = View.VISIBLE
-        textViewAccessibility.visibility = View.VISIBLE
-        textViewAccessibility.setOnClickListener {
+    private fun showAccessibilitySection() {
+        binding.textViewTitleAccessibility.visibility = View.VISIBLE
+        binding.textViewAccessibility.visibility = View.VISIBLE
+        binding.textViewAccessibility.setOnClickListener {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         }
     }
 
     private fun hideAllAccessibilityEnabled() {
-        textViewTitleAllAccessibilityEnabled.visibility = View.GONE
-        textViewAllAccessibilityEnabled.visibility = View.GONE
+        binding.textViewTitleAllAccessibility.visibility = View.GONE
+        binding.textViewAllAccessibility.visibility = View.GONE
     }
 
-    private fun showAllAccessibilityEnabled() {
-        textViewTitleAllAccessibilityEnabled.visibility = View.VISIBLE
-        textViewAllAccessibilityEnabled.visibility = View.VISIBLE
+    private fun showAllAccessibilityEnabledSection() {
+        binding.textViewTitleAllAccessibility.visibility = View.VISIBLE
+        binding.textViewAllAccessibility.visibility = View.VISIBLE
     }
 
 }
