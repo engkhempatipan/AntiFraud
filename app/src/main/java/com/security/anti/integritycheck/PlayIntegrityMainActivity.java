@@ -1,5 +1,8 @@
 package com.security.anti.integritycheck;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Animatable;
@@ -14,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.Task;
@@ -24,6 +28,11 @@ import com.google.android.play.core.integrity.IntegrityManagerFactory;
 import com.google.android.play.core.integrity.IntegrityTokenRequest;
 import com.google.android.play.core.integrity.IntegrityTokenResponse;
 import com.google.android.play.core.integrity.model.IntegrityErrorCode;
+import com.security.anti.fraud.R;
+import com.security.anti.fraud.checker.SecurityChecker;
+import com.security.anti.fraud.checker.SecurityCheckerInterface;
+import com.security.anti.integritycheck.async.AsyncTask;
+import com.security.anti.integritycheck.dialogs.AboutDialog;
 
 import org.json.JSONObject;
 
@@ -31,9 +40,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import com.security.anti.fraud.R;
-import com.security.anti.integritycheck.async.AsyncTask;
-import com.security.anti.integritycheck.dialogs.AboutDialog;
 
 public class PlayIntegrityMainActivity extends AppCompatActivity {
 
@@ -42,6 +48,8 @@ public class PlayIntegrityMainActivity extends AppCompatActivity {
     private ImageView basicIntegrityIcon;
     private ImageView strongIntegrityIcon;
     private String jsonResponse;
+    private ConstraintLayout csLayoutGMS;
+    private ConstraintLayout csLayoutHMS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +60,10 @@ public class PlayIntegrityMainActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(R.string.app_name);
         }
 
+        SecurityCheckerInterface checker = new SecurityChecker();
+
+        csLayoutGMS = findViewById(R.id.csLayoutGMS);
+        csLayoutHMS = findViewById(R.id.csLayoutHMS);
         btn = findViewById(R.id.check_btn);
         deviceIntegrityIcon = findViewById(R.id.device_integrity_icon);
         basicIntegrityIcon = findViewById(R.id.basic_integrity_icon);
@@ -62,6 +74,19 @@ public class PlayIntegrityMainActivity extends AppCompatActivity {
             setIcons(-1, -1, -1);
             getToken();
         });
+
+
+        handleNavigate(checker.checkHuaweiOS(this, getApplicationContext().getPackageName()));
+    }
+
+    private void handleNavigate(boolean isHuawei) {
+        if (isHuawei) {
+            csLayoutHMS.setVisibility(VISIBLE);
+            csLayoutGMS.setVisibility(GONE);
+        } else {
+            csLayoutHMS.setVisibility(GONE);
+            csLayoutGMS.setVisibility(VISIBLE);
+        }
     }
 
     private void getToken() {

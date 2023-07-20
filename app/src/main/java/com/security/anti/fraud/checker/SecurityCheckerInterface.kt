@@ -23,4 +23,8 @@ interface SecurityCheckerInterface {
         activity: Activity,
         callback: AccessibilityUntrustedEnabledListCallback
     )
+
+    fun checkHuaweiOS(
+        activity: Activity,
+        packageName: String): Boolean
 }
