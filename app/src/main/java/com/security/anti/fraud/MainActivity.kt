@@ -1,10 +1,13 @@
 package com.security.anti.fraud
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.huawei.hms.api.ConnectionResult
+import com.huawei.hms.api.HuaweiApiAvailability
 import com.security.anti.fraud.checker.SecurityChecker
 import com.security.anti.fraud.checker.SecurityCheckerInterface
 import com.security.anti.fraud.checker.callback.AccessibilityEnabledListCallback
@@ -27,6 +30,12 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         scanUnSecureApps()
+    }
+
+    private fun isHMSAvailable(context: Context): Boolean {
+        val hms = HuaweiApiAvailability.getInstance()
+        val isHMS = hms.isHuaweiMobileServicesAvailable(context)
+        return isHMS == ConnectionResult.SUCCESS
     }
 
     private fun scanUnSecureApps() {
