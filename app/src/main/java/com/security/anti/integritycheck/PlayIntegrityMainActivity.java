@@ -13,6 +13,7 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,6 +29,14 @@ import com.google.android.play.core.integrity.IntegrityManagerFactory;
 import com.google.android.play.core.integrity.IntegrityTokenRequest;
 import com.google.android.play.core.integrity.IntegrityTokenResponse;
 import com.google.android.play.core.integrity.model.IntegrityErrorCode;
+import com.huawei.hmf.tasks.OnFailureListener;
+import com.huawei.hmf.tasks.OnSuccessListener;
+import com.huawei.hms.common.ApiException;
+import com.huawei.hms.support.api.entity.safetydetect.SysIntegrityRequest;
+import com.huawei.hms.support.api.entity.safetydetect.SysIntegrityResp;
+import com.huawei.hms.support.api.safetydetect.SafetyDetect;
+import com.huawei.hms.support.api.safetydetect.SafetyDetectClient;
+import com.huawei.hms.support.api.safetydetect.SafetyDetectStatusCodes;
 import com.security.anti.fraud.R;
 import com.security.anti.fraud.checker.SecurityChecker;
 import com.security.anti.fraud.checker.SecurityCheckerInterface;
@@ -35,6 +44,8 @@ import com.security.anti.integritycheck.async.AsyncTask;
 import com.security.anti.integritycheck.dialogs.AboutDialog;
 
 import org.json.JSONObject;
+
+import java.nio.charset.StandardCharsets;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -44,12 +55,14 @@ import okhttp3.ResponseBody;
 public class PlayIntegrityMainActivity extends AppCompatActivity {
 
     private MaterialButton btn;
+    private MaterialButton btnHuawei;
     private ImageView deviceIntegrityIcon;
     private ImageView basicIntegrityIcon;
     private ImageView strongIntegrityIcon;
     private String jsonResponse;
     private ConstraintLayout csLayoutGMS;
     private ConstraintLayout csLayoutHMS;
+    private TextView tvHuawei;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +78,9 @@ public class PlayIntegrityMainActivity extends AppCompatActivity {
         csLayoutGMS = findViewById(R.id.csLayoutGMS);
         csLayoutHMS = findViewById(R.id.csLayoutHMS);
         btn = findViewById(R.id.check_btn);
+        btnHuawei = findViewById(R.id.check_btn_huawei);
+        tvHuawei = findViewById(R.id.tvHuewei);
+
         deviceIntegrityIcon = findViewById(R.id.device_integrity_icon);
         basicIntegrityIcon = findViewById(R.id.basic_integrity_icon);
         strongIntegrityIcon = findViewById(R.id.strong_integrity_icon);
@@ -75,6 +91,10 @@ public class PlayIntegrityMainActivity extends AppCompatActivity {
             getToken();
         });
 
+        btnHuawei.setOnClickListener(view -> {
+            toggleButtonLoading(true);
+            invokeSysIntegrity();
+        });
 
         handleNavigate(checker.checkHuaweiOS(this, getApplicationContext().getPackageName()));
     }
@@ -304,11 +324,38 @@ public class PlayIntegrityMainActivity extends AppCompatActivity {
         }
     }
 
+    private void invokeSysIntegrity() {
+        var nonce = generateNonce().getBytes(StandardCharsets.UTF_8);
+        var mClient = SafetyDetect.getClient(getApplicationContext());
+        var sysIntegrityRequest = new SysIntegrityRequest();
+        sysIntegrityRequest.setAppId("108775295");
+        sysIntegrityRequest.setNonce(nonce);
+        sysIntegrityRequest.setAlg("RS256");
+        mClient.sysIntegrity(sysIntegrityRequest)
+                .addOnSuccessListener(sysIntegrityResp -> {
+                    toggleButtonLoading(false);
+                    String jwsStr = sysIntegrityResp.getResult();
+                })
+                .addOnFailureListener(e -> {
+                    toggleButtonLoading(false);
+                    if (e instanceof ApiException) {
+                        // An error with the HMS API contains some
+                        // additional details.
+                        ApiException apiException = (ApiException) e;
+                        // You can retrieve the status code using
+                        // the apiException.getStatusCode() method.
+                        tvHuawei.setText("Error: " + SafetyDetectStatusCodes.getStatusCodeString(apiException.getStatusCode()) + ": " + apiException.getMessage());
+                    } else {
+                        // A different, unknown type of error occurred.
+                        tvHuawei.setText("ERROR:" + e.getMessage());
+                    }
+                });
+    }
+
     // Menu stuff
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
-
         return true;
     }
 
