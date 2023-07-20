@@ -13,7 +13,7 @@ import com.security.anti.fraud.checker.callback.DisplayCheckerCallback
 import com.security.anti.fraud.databinding.ActivityMainBinding
 import com.security.anti.fraud.model.DisplayManagerModel
 import com.security.anti.fraud.model.Model
-
+//
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var checker: SecurityCheckerInterface
