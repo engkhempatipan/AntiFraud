@@ -9,6 +9,7 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,9 +44,12 @@ import com.security.anti.fraud.checker.SecurityCheckerInterface;
 import com.security.anti.integritycheck.async.AsyncTask;
 import com.security.anti.integritycheck.dialogs.AboutDialog;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.util.Arrays;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -110,7 +114,10 @@ public class PlayIntegrityMainActivity extends AppCompatActivity {
     }
 
     private void getToken() {
-        String nonce = generateNonce();
+        String firstNonce = generateNonce();
+        String hashMessage = encryptData(2, "testBla");
+        String nonce = combineNonce(firstNonce, hashMessage);
+        String decode = decodeNonce(nonce);
 
         // Create an instance of a manager.
         IntegrityManager integrityManager = IntegrityManagerFactory.create(getApplicationContext());
@@ -131,6 +138,42 @@ public class PlayIntegrityMainActivity extends AppCompatActivity {
             toggleButtonLoading(false);
             showErrorDialog("Error getting token from Google", getErrorText(e));
         });
+    }
+
+    public static String combineNonce(String nonce, String messageHash) {
+        return Base64.encodeToString((nonce + messageHash).getBytes(), Base64.NO_WRAP | Base64.URL_SAFE);
+    }
+
+    public static String decodeNonce(String nonce) {
+        return new String(Base64.decode(nonce, Base64.NO_WRAP | Base64.URL_SAFE));
+    }
+
+    public static String generateNonceSec() {
+
+        SecureRandom random = new SecureRandom();
+
+        byte[] nonceBytes = new byte[50];
+
+        random.nextBytes(nonceBytes);
+
+        return Base64.encodeToString(nonceBytes, Base64.NO_WRAP | Base64.URL_SAFE);
+    }
+
+    private String encryptData(int mod, String data) {
+        switch (mod % 5) {
+            case 0:
+                return DigestUtils.md5Hex(data);
+            case 1:
+                return DigestUtils.sha1Hex(data);
+            case 2:
+                return DigestUtils.sha256Hex(data);
+            case 3:
+                return DigestUtils.sha384Hex(data);
+            case 4:
+                return DigestUtils.sha512Hex(data);
+            default:
+                return "";
+        }
     }
 
     private class getTokenResponse extends AsyncTask<String, Integer, String[]> {
@@ -234,7 +277,8 @@ public class PlayIntegrityMainActivity extends AppCompatActivity {
         for (int i = 0; i < length; i++) {
             nonce = nonce.concat(String.valueOf(allowed.charAt((int) Math.floor(Math.random() * allowed.length()))));
         }
-        return nonce;
+//        return nonce
+        return Base64.encodeToString(nonce.getBytes(), Base64.NO_WRAP | Base64.URL_SAFE);
     }
 
     private void showErrorDialog(String title, String message) {
