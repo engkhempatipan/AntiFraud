@@ -13,4 +13,29 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="Theme.PlayIntegrityAPIChecker" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/darkPrimary</item>
+        <item name="colorPrimaryVariant">@color/darkPrimary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/blueSecondary</item>
+        <item name="colorSecondaryVariant">@color/blueSecondaryAlphaDark</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" >?attr/colorPrimaryVariant</item>
+        <item name="android:navigationBarColor" >?attr/colorPrimaryVariant</item>
+        <!-- 3dot color -->
+        <item name="actionOverflowButtonStyle">@style/Theme.PlayIntegrityAPIChecker.actionButtonOverflow</item>
+    </style>
+
+    <style name="Theme.PlayIntegrityAPIChecker.Dialogs" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorAccent">@color/blueSecondary</item>
+        <item name="colorPrimary">@color/blueSecondary</item>
+    </style>
+
+    <style name="Theme.PlayIntegrityAPIChecker.actionButtonOverflow" parent="Widget.AppCompat.Light.ActionButton.Overflow">
+        <item name="android:tint">@color/white</item>
+    </style>
 </resources>

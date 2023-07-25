@@ -81,4 +81,8 @@ class SecurityChecker : SecurityCheckerInterface {
         }
         callback.onDetected(untrustedList, untrustedListString)
     }
+
+    override fun checkHuaweiOS(activity: Activity, packageName: String): Boolean {
+        return "com.huawei.appmarket" == activity.getInstallerId(packageName)
+    }
 }
